@@ -1,0 +1,45 @@
+services:
+    cscart:
+        build:
+            context: ./
+            dockerfile: docker/apache/Dockerfile
+        restart: always
+        ports:
+            - "80:80"
+            - "443:443"
+        volumes:
+            - ./:/var/www/html
+            - ./docker/apache/vhost.conf:/etc/apache2/sites-enabled/000-default.conf
+            - ./docker/apache/vhost-ssl.conf:/etc/apache2/sites-enabled/default-ssl.conf
+            - ./docker/apache/ssl/selfsigned.crt:/etc/ssl/certs/selfsigned.crt
+            - ./docker/apache/ssl/selfsigned.key:/etc/ssl/private/selfsigned.key
+
+    mariadb:
+        image: mariadb:latest
+        restart: always
+        environment:
+            MYSQL_DATABASE: cscart
+            MYSQL_USER: cscart
+            MYSQL_PASSWORD: cscart
+            MYSQL_ROOT_PASSWORD: root
+        volumes:
+            - ./mariadb:/var/lib/mysql
+            - ./docker/mariadb/my.cnf:/etc/mysql/my.cnf:ro
+  
+    phpmyadmin:
+        depends_on:
+            - mariadb
+        image: phpmyadmin/phpmyadmin
+        restart: always
+        ports:
+            - "8181:80"
+        environment:
+            PMA_HOST: mariadb
+
+volumes:
+    mariadb:
+        external: false
+
+networks:
+    default:
+        name: network_cscart
