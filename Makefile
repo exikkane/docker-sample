@@ -1,7 +1,7 @@
 .PHONY: init up down build serve migrate clearcache
 
 init:
-	bash scripts/client-init.sh "$(domain)" "$(backup)"
+	bash scripts/client-init.sh "$(domain)"
 
 up:
 	bash scripts/client-up.sh

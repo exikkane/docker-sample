@@ -7,7 +7,7 @@ STATE_FILE="${ROOT_DIR}/.client-domain"
 HOSTS_FILE="/etc/hosts"
 
 if [[ ! -f "${STATE_FILE}" ]]; then
-    echo "Domain state file not found: ${STATE_FILE}. Run make init domain=... backup=... first." >&2
+    echo "Domain state file not found: ${STATE_FILE}. Run make init domain=... first." >&2
     exit 1
 fi
 

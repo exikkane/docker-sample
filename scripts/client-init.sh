@@ -4,28 +4,11 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 DOMAIN="${1:-}"
-BACKUP_INPUT="${2:-}"
 STATE_FILE="${ROOT_DIR}/.client-domain"
 PROJECTS_ROOT="$(dirname "${ROOT_DIR}")"
 
 if [[ -z "${DOMAIN}" ]]; then
-    echo "Domain is required. Usage: make init domain=client.example backup=backup.zip" >&2
-    exit 1
-fi
-
-if [[ -z "${BACKUP_INPUT}" ]]; then
-    echo "Backup archive is required. Usage: make init domain=client.example backup=backup.zip" >&2
-    exit 1
-fi
-
-if [[ "${BACKUP_INPUT}" = /* ]]; then
-    BACKUP_ARCHIVE="${BACKUP_INPUT}"
-else
-    BACKUP_ARCHIVE="${ROOT_DIR}/${BACKUP_INPUT}"
-fi
-
-if [[ ! -f "${BACKUP_ARCHIVE}" ]]; then
-    echo "Backup archive not found: ${BACKUP_ARCHIVE}" >&2
+    echo "Domain is required. Usage: make init domain=client.example" >&2
     exit 1
 fi
 
@@ -57,15 +40,6 @@ update_vhost() {
 
 find_sql_dump() {
     local extracted_dir="${1}"
-    local backup_basename sql_candidate
-
-    backup_basename="$(basename "${BACKUP_ARCHIVE}" .zip)"
-    sql_candidate="${extracted_dir}/var/restore/${backup_basename}.sql"
-
-    if [[ -f "${sql_candidate}" ]]; then
-        printf '%s\n' "${sql_candidate}"
-        return
-    fi
 
     find "${extracted_dir}/var/restore" -maxdepth 1 -type f -name '*.sql' | sort | head -n 1
 }
@@ -104,15 +78,12 @@ ensure_shared_links() {
     done
 }
 
-echo "Extracting backup archive ${BACKUP_ARCHIVE}"
-unzip -oq "${BACKUP_ARCHIVE}" -d "${ROOT_DIR}"
-
 ensure_shared_links
 
 SQL_DUMP="$(find_sql_dump "${ROOT_DIR}")"
 
 if [[ -z "${SQL_DUMP}" || ! -f "${SQL_DUMP}" ]]; then
-    echo "SQL dump not found in ${ROOT_DIR}/var/restore" >&2
+    echo "SQL dump not found in ${ROOT_DIR}/var/restore. Put a .sql backup there before make init." >&2
     exit 1
 fi
 

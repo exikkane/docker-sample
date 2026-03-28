@@ -10,7 +10,6 @@
 - `docker`
 - `docker compose`
 - `make`
-- `unzip`
 - `sudo`
 
 Также текущий пользователь должен иметь возможность запускать:
@@ -27,15 +26,19 @@ git clone <repo-url> ~/projects/client-project
 cd ~/projects/client-project
 ```
 
-После клонирования нужно загрузить в корень проекта клиентский архив вида `backup_*.zip`.
+После клонирования в проекте уже должны быть:
+- файлы магазина
+- SQL-дамп в `var/restore/*.sql`
 
 Итоговая структура должна быть такой:
 
 ```text
 ~/projects/client-project/
-├── backup_*.zip
 ├── docker/
 ├── scripts/
+├── var/
+│   └── restore/
+│       └── backup_*.sql
 ├── mariadb/
 ├── docker-compose.yml
 ├── Makefile
@@ -47,11 +50,12 @@ cd ~/projects/client-project
 Первая инициализация запускается одной командой:
 
 ```bash
-make init domain=client-domain.ru backup=backup_4.19.1.SP1_28Mar2026_082008.zip
+make init domain=client-domain.ru
 ```
 
 Команда делает следующее:
-- распаковывает архив магазина в корень проекта
+- создаёт симлинк `AGENTS.md` из `~/projects/AGENTS.md`, если файл существует
+- создаёт симлинк `docs` из `~/projects/docs`, если папка существует
 - ищет SQL-дамп в `var/restore/*.sql`
 - подставляет домен в `local_conf.php`
 - подставляет домен в Apache vhost-конфиги
@@ -61,8 +65,6 @@ make init domain=client-domain.ru backup=backup_4.19.1.SP1_28Mar2026_082008.zip
 - ждёт готовности MariaDB
 - пересоздаёт базу `cscart`
 - импортирует найденный SQL
-- создаёт симлинк `AGENTS.md` из `~/projects/AGENTS.md`, если файл существует
-- создаёт симлинк `docs` из `~/projects/docs`, если папка существует
 
 ## Повседневная работа
 
@@ -82,7 +84,7 @@ make down
 
 `make init`
 - используется только для первичного разворачивания проекта
-- требует `domain=...` и `backup=...`
+- требует `domain=...`
 - автоматически запускает `make up`
 
 `make up`
@@ -119,16 +121,15 @@ make down
 Если проект нужно полностью инициализировать заново в той же папке, достаточно снова выполнить:
 
 ```bash
-make init domain=client-domain.ru backup=backup_*.zip
+make init domain=client-domain.ru
 ```
 
-## Типовой сценарий
+## Типовой сценарий разработчика
 
 ```bash
 git clone <repo-url> ~/projects/client-project
 cd ~/projects/client-project
-cp /path/to/backup_*.zip .
-make init domain=client-domain.ru backup=backup_*.zip
+make init domain=client-domain.ru
 make down
 make up
 ```
