@@ -112,6 +112,10 @@ echo "Recreating database"
 sudo docker compose exec -T mariadb mariadb -uroot -proot -e "DROP DATABASE IF EXISTS cscart; CREATE DATABASE cscart CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
 
 echo "Importing SQL dump ${SQL_DUMP}"
-sudo docker compose exec -T mariadb mariadb -uroot -proot cscart < "${SQL_DUMP}"
+{
+    printf 'SET FOREIGN_KEY_CHECKS=0;\n'
+    cat "${SQL_DUMP}"
+    printf '\nSET FOREIGN_KEY_CHECKS=1;\n'
+} | sudo docker compose exec -T mariadb mariadb -uroot -proot cscart
 
 echo "Initialization completed for ${DOMAIN}"

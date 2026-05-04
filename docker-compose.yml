@@ -9,6 +9,7 @@ services:
             - "443:443"
         volumes:
             - ./:/var/www/html
+            - ./docker/apache/php.ini:/usr/local/etc/php/conf.d/zz-cscart.ini:ro
             - ./docker/apache/vhost.conf:/etc/apache2/sites-enabled/000-default.conf
             - ./docker/apache/vhost-ssl.conf:/etc/apache2/sites-enabled/default-ssl.conf
             - ./docker/apache/ssl/selfsigned.crt:/etc/ssl/certs/selfsigned.crt

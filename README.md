@@ -29,6 +29,7 @@ cd ~/projects/client-project
 После клонирования в проекте уже должны быть:
 - файлы магазина
 - SQL-дамп в `var/restore/*.sql`
+- pre-commit kit для проекта
 
 Итоговая структура должна быть такой:
 
@@ -40,8 +41,11 @@ cd ~/projects/client-project
 │   └── restore/
 │       └── backup_*.sql
 ├── mariadb/
+├── tools/
 ├── docker-compose.yml
 ├── Makefile
+├── .pre-commit-config.yaml
+├── phpcs.xml.dist
 └── local_conf.php
 ```
 
@@ -79,6 +83,27 @@ make up
 ```bash
 make down
 ```
+
+## Установка git hooks
+
+В sample уже встроен CS-Cart pre-commit kit. После первого клонирования проекта нужно один раз установить hooks:
+
+```bash
+make hooks-install
+```
+
+Команда:
+- проверяет наличие `pre-commit` и `phpcs`
+- если их нет, пытается установить автоматически
+- выполняет `pre-commit install`
+- если есть staged-файлы, запускает `pre-commit` только по ним
+- если staged-файлов нет, только устанавливает hooks без полного прогона по проекту
+
+Для автоустановки используются:
+- `pipx`, `apt-get` или локальный `python3 -m venv` для `pre-commit`
+- `apt-get` или `composer` для `phpcs`
+
+Если в системе уже есть `vendor/bin/phpcs`, он тоже будет использован.
 
 ## Что делают команды
 
@@ -130,6 +155,7 @@ make init domain=client-domain.ru
 git clone <repo-url> ~/projects/client-project
 cd ~/projects/client-project
 make init domain=client-domain.ru
+make hooks-install
 make down
 make up
 ```

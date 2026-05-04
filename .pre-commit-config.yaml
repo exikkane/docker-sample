@@ -1,0 +1,84 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: ^(var/files/|var/cache/|images/|\.idea/)
+      - id: end-of-file-fixer
+        exclude: ^(var/files/|var/cache/|images/|\.idea/)
+      - id: check-merge-conflict
+      - id: mixed-line-ending
+        args: [--fix=lf]
+      - id: check-yaml
+      - id: check-xml
+        files: (^|/)(addon\.xml|.*\.xml)$
+      - id: check-added-large-files
+        args: [--maxkb=2048]
+
+  - repo: local
+    hooks:
+      - id: staged-php-lint
+        name: staged php lint
+        entry: bash tools/pre-commit/staged_php_lint.sh
+        language: system
+        pass_filenames: false
+
+      - id: staged-short-list-syntax
+        name: staged short list syntax
+        entry: bash tools/pre-commit/staged_short_list_syntax.sh
+        language: system
+        pass_filenames: false
+
+      - id: staged-phpcbf
+        name: staged phpcbf
+        entry: bash tools/pre-commit/staged_phpcbf.sh
+        language: system
+        pass_filenames: false
+
+      - id: staged-phpcs
+        name: staged phpcs
+        entry: bash tools/pre-commit/staged_phpcs.sh
+        language: system
+        pass_filenames: false
+
+      - id: forbid-debug-output
+        name: forbid debug output
+        entry: bash tools/pre-commit/forbid_debug_output.sh
+        language: system
+        pass_filenames: false
+
+      - id: forbid-dangerous-sql-patterns
+        name: forbid dangerous sql patterns
+        entry: bash tools/pre-commit/forbid_dangerous_sql_patterns.sh
+        language: system
+        pass_filenames: false
+
+      - id: forbid-inline-css-and-javascript-href
+        name: forbid inline css and javascript href
+        entry: bash tools/pre-commit/forbid_tpl_antipatterns.sh
+        language: system
+        pass_filenames: false
+
+      - id: validate-new-php-header
+        name: validate new php header
+        entry: bash tools/pre-commit/validate_new_php_header.sh
+        language: system
+        pass_filenames: false
+
+      - id: validate-hook-registration
+        name: validate hook registration
+        entry: bash tools/pre-commit/validate_hook_registration.sh
+        language: system
+        pass_filenames: false
+
+      - id: validate-addon-translations
+        name: validate addon translations
+        entry: bash tools/pre-commit/validate_addon_translations.sh
+        language: system
+        pass_filenames: false
+
+      - id: forbid-hardcoded-addon-ui-strings
+        name: forbid hardcoded addon ui strings
+        entry: bash tools/pre-commit/forbid_hardcoded_ui_strings.sh
+        language: system
+        pass_filenames: false

@@ -1,4 +1,4 @@
-.PHONY: init up down build serve migrate clearcache
+.PHONY: init up down build serve migrate clearcache hooks-install
 
 init:
 	bash scripts/client-init.sh "$(domain)"
@@ -18,3 +18,6 @@ reboot:
 
 rebuild:
 	make down && make build && make up
+
+hooks-install:
+	bash scripts/hooks-install.sh
